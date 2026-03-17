@@ -1,10 +1,18 @@
 from __future__ import annotations
-
 from typing import Any
-
 from .base_reader import get_datagokr_document, normalize_name
 
-def get_IssuIssuItemStat(serviceKey: str, bondIsurNm: str, timeout_seconds: float = 60.0) -> Any | None:
+
+"""
+Read https://www.data.go.kr/data/15043421/openapi.do
+"""
+
+
+def get_IssuIssuItemStat(
+    serviceKey: str,
+    bondIsurNm: str,
+    timeout_seconds: float = 60.0,
+) -> Any | None:
     """ 발행인에 따른 채권 조회. """
     service_url = "1160100/service/GetBondTradInfoService/getIssuIssuItemStat"
 
@@ -24,11 +32,13 @@ def parse_issu_issu_item_stat(
     bondIsurNm: str,
     bondNm: str,
     timeout_seconds: float = 60.0,
-    raw: Any | None = None,
 ) -> dict[str, Any] | None:
     """ Parse get_IssuIssuItemStat results. """
-    if raw is None:
-        raw = get_IssuIssuItemStat(serviceKey=serviceKey, bondIsurNm=bondIsurNm, timeout_seconds=timeout_seconds)
+    raw = get_IssuIssuItemStat(
+        serviceKey=serviceKey,
+        bondIsurNm=bondIsurNm,
+        timeout_seconds=timeout_seconds,
+    )
     if raw is None:
         return None
 
@@ -60,16 +70,16 @@ def parse_issu_issu_item_stat(
         normalized_bondNm = normalize_name(bondNm)
         if normalized_isinCdNm == normalized_bondNm:
             result = {
-                "basDt": it.get("basDt"),
-                "crno": it.get("crno"),
-                "isinCd": it.get("isinCd"),
+                "기준일자": it.get("basDt", ""),
+                "법인등록번호": it.get("crno", ""),
+                "isinCd": it.get("isinCd", ""),
 
-                "bondExprDt": it.get("bondExprDt"),
-                "bondIssuDt": it.get("bondIssuDt"),
-                "bondIssuAmt": it.get("bondIssuAmt"),
+                "만기일": it.get("bondExprDt", ""), # 상환된 경우 상환일
+                "발행일": it.get("bondIssuDt", ""),
+                "최초발행권면": it.get("bondIssuAmt", ""),
 
-                "isinCdNm": it.get("isinCdNm"),
-                "bondPymtAmt": it.get("bondPymtAmt"),
+                "isinCdNm": it.get("isinCdNm", ""),
+                "최초납입금액": it.get("bondPymtAmt", ""),
             }
             return result
     return None

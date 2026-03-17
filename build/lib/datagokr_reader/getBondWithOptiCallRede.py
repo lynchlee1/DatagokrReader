@@ -4,53 +4,40 @@ from typing import Any
 
 from .base_reader import get_datagokr_document
 
+"""
+Read https://www.data.go.kr/data/15059595/openapi.do
+"""
 
 def get_BondWithOptiCallRede(
     serviceKey: str,
-    crno: str,
-    opbdIsurNm: str,
+    isinCd: str,
     timeout_seconds: float = 60.0,
-    numOfRows: int = 100,
-    resultType: str = "json",
 ) -> Any | None:
     """ 옵션 행사내역 다운로드. """
     service_url = "1160100/service/GetBondRedeInfoService/getBondWithOptiCallRede"
-    if not crno and not opbdIsurNm:
-        raise ValueError("crno 또는 opbdIsurNm가 없습니다.")
-
     params: dict[str, Any] = {
         "serviceKey": serviceKey,
+        "isinCd": isinCd,
     }
-    if crno:
-        params["crno"] = crno
-    if opbdIsurNm:
-        params["opbdIsurNm"] = opbdIsurNm
 
     return get_datagokr_document(
         serviceUrl=service_url,
         params=params,
-        timeout_seconds=timeout_seconds,
-        numOfRows=numOfRows,
-        resultType=resultType,
+        timeout_seconds=timeout_seconds
     )
 
 
 def parse_bond_with_opti_call_rede(
     serviceKey: str,
-    crno: str,
-    opbdIsurNm: str,
+    isinCd: str,
     timeout_seconds: float = 60.0,
-    raw: Any | None = None,
-    isinCdKey: str | None = None,
 ) -> list[dict[str, Any]] | None:
     """ Parse get_BondWithOptiCallRede results. """
-    if raw is None:
-        raw = get_BondWithOptiCallRede(
-            serviceKey=serviceKey,
-            crno=crno,
-            opbdIsurNm=opbdIsurNm,
-            timeout_seconds=timeout_seconds,
-        )
+    raw = get_BondWithOptiCallRede(
+        serviceKey=serviceKey,
+        isinCd=isinCd,
+        timeout_seconds=timeout_seconds,
+    )
     if raw is None:
         return None
 
@@ -78,31 +65,16 @@ def parse_bond_with_opti_call_rede(
     if not items:
         return []
 
-    # 아래 항목들은 it에 존재하지만, 현재 라이브러리 목적상 파싱하지 않음
-    # "isinCd": it.get("isinCd"),            # ISIN 종목번호, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "crno": it.get("crno"),                # 기업의 법인등록번호, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "isinCdNm": it.get("isinCdNm"),        # ISIN 종목명, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "opbdIsurNm": it.get("opbdIsurNm"),    # 채권의 발행사명, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "opbdIssuDt": it.get("opbdIssuDt"),    # 채권의 발행일, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "opbdExprDt": it.get("opbdExprDt"),    # 채권의 만기일, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "opbdIssuAmt": it.get("opbdIssuAmt"),  # 최초발행액, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "bondIssuAmt": it.get("bondIssuAmt"),  # 발행잔액, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-
     out: list[dict[str, Any]] = []
     for it in items:
-        isin = it.get("isinCd")
-        if isinCdKey:
-            if not isin or isin != isinCdKey:
-                continue
-        else:
-            if not isin:
-                continue
+        # isinCd 등 파라미터로 사용한 변수는 파싱하지 않음
         out.append(
             {
-                "isinCd": isin,
-                "optnTcdNm": it.get("optnTcdNm"),
-                "opbdClrdDt": it.get("opbdClrdDt"),
-                "opbdPamtPayAmt": it.get("opbdPamtPayAmt"),
+                "발행잔액": it.get("bondIssuAmt", ""),
+                "옵션분류": it.get("optnTcdNm", ""),
+                "행사일자": it.get("opbdClrdDt", ""),
+                "행사원금": it.get("opbdPamtPayAmt", ""),
+                "행사이자": it.get("opbdIntPayAmt", ""),
             }
         )
 

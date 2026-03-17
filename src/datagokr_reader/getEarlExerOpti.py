@@ -1,32 +1,29 @@
 from __future__ import annotations
-
 from typing import Any
-
 from .base_reader import get_datagokr_document
+
+
+"""
+Read https://www.data.go.kr/data/15059595/openapi.do
+"""
+
 
 def get_EarlExerOpti(
     serviceKey: str,
-    basDt: str | None,
-    bondIsurNm: str,
-    crno: str,
+    basDt: str,
+    isinCd: str,
     timeout_seconds: float = 60.0,
 ) -> Any | None:
-    """ 옵션 행사 일정 다운로드. 
-        사모 사채는 콜옵션이 공시되지 않는 경우가 있으니 주의. 
+    """ 
+    옵션 행사 일정 다운로드. 콜옵션은 대부분의 경우 누락되니 주의.
+    basDt가 없는 경우 수만 개에 달하기 때문에 사실상 사용 불가능.
     """
     service_url = "1160100/service/GetBondRedeInfoService/getEarlExerOpti"
-    if not bondIsurNm and not crno:
-        raise ValueError("bondIsurNm 또는 crno가 없습니다.")
-
     params: dict[str, Any] = {
-        "serviceKey": serviceKey
+        "serviceKey": serviceKey,
+        "basDt": basDt,
+        "isinCd": isinCd,
     }
-    if basDt:
-        params["basDt"] = basDt
-    if bondIsurNm: 
-        params["bondIsurNm"] = bondIsurNm
-    if crno: 
-        params["crno"] = crno
     return get_datagokr_document(
         serviceUrl=service_url,
         params=params,
@@ -36,14 +33,17 @@ def get_EarlExerOpti(
 
 def parse_earl_exer_opti(
     serviceKey: str,
-    basDt: str | None,
-    bondIsurNm: str,
-    crno: str,
+    basDt: str,
+    isinCd: str,
     timeout_seconds: float = 60.0,
-    isinCdKey: str | None = None,
 ) -> list[dict[str, Any]] | None:
     """ Parse get_EarlExerOpti results. """
-    raw = get_EarlExerOpti(serviceKey=serviceKey, basDt=basDt, bondIsurNm=bondIsurNm, crno=crno, timeout_seconds=timeout_seconds)
+    raw = get_EarlExerOpti(
+        serviceKey=serviceKey,
+        basDt=basDt,
+        isinCd=isinCd,
+        timeout_seconds=timeout_seconds
+    )
     if raw is None:
         return None
 
@@ -71,28 +71,16 @@ def parse_earl_exer_opti(
     if not items:
         return []
 
-    # 아래 항목들은 it에 존재하지만, 현재 라이브러리 목적상 파싱하지 않음
-    # "isinCd": it.get("isinCd"),           # ISIN 종목번호, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "basDt": it.get("basDt"),             # 채권의 기준일, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "crno": it.get("crno"),               # 기업의 법인등록번호, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "bondIsurNm": it.get("bondIsurNm"),   # 채권의 발행사명, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-    # "isinCdNm": it.get("isinCdNm"),       # ISIN 종목명, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
-
     out: list[dict[str, Any]] = []
     for it in items:
-        isin = it.get("isinCd")
-        if not isin:
-            continue
-        if isinCdKey and isin != isinCdKey:
-            continue
+        # isinCd, basDt 등 파라미터로 사용한 변수는 파싱하지 않음
         out.append(
             {
-                "isinCd": isin,
-                "type": it.get("optnTcdNm"),
-                "dates": [
-                    it.get("optnExertSttgDt"),
-                    it.get("optnExertEdDt"),
-                    it.get("clrdDt"),
+                "옵션분류": it.get("optnTcdNm", ""),
+                "행사일정": [
+                    it.get("옵션청구시작일", ""),
+                    it.get("옵션청구종료일", ""),
+                    it.get("지급일", ""),
                 ],
             }
         )
