@@ -73,7 +73,6 @@ def parse_earl_exer_opti(
 
     out: list[dict[str, Any]] = []
     for it in items:
-        # isinCd, basDt 등 파라미터로 사용한 변수는 파싱하지 않음
         out.append(
             {
                 "옵션분류": it.get("optnTcdNm", ""),

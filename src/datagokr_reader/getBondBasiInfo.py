@@ -5,18 +5,20 @@ from typing import Any
 from .base_reader import get_datagokr_document
 
 """
-Read https://www.data.go.kr/data/15059595/openapi.do
+Read https://www.data.go.kr/data/15059592/openapi.do
 """
 
-def get_BondWithOptiCallRede(
+def get_BondBasiInfo(
     serviceKey: str,
+    basDt: str,
     isinCd: str,
     timeout_seconds: float = 60.0,
 ) -> Any | None:
-    """ 옵션 행사내역 다운로드. """
-    service_url = "1160100/service/GetBondRedeInfoService/getBondWithOptiCallRede"
+    """ 채권 기초정보 다운로드. """
+    service_url = "1160100/service/GetBondIssuInfoService/getBondBasiInfo"
     params: dict[str, Any] = {
         "serviceKey": serviceKey,
+        "basDt": basDt,
         "isinCd": isinCd,
     }
 
@@ -27,14 +29,16 @@ def get_BondWithOptiCallRede(
     )
 
 
-def parse_bond_with_opti_call_rede(
+def parse_bond_basi_info(
     serviceKey: str,
+    basDt: str,
     isinCd: str,
     timeout_seconds: float = 60.0,
 ) -> list[dict[str, Any]] | None:
-    """ Parse get_BondWithOptiCallRede results. """
-    raw = get_BondWithOptiCallRede(
+    """ Parse get_BondBasiInfo results. """
+    raw = get_BondBasiInfo(
         serviceKey=serviceKey,
+        basDt=basDt,
         isinCd=isinCd,
         timeout_seconds=timeout_seconds,
     )
@@ -69,10 +73,7 @@ def parse_bond_with_opti_call_rede(
     for it in items:
         out.append(
             {
-                "옵션분류": it.get("optnTcdNm", ""),
-                "행사일자": it.get("opbdClrdDt", ""),
-                "행사원금": it.get("opbdPamtPayAmt", ""),
-                "행사이자": it.get("opbdIntPayAmt", ""),
+                "발행잔액": it.get("bondBal", ""),
             }
         )
 

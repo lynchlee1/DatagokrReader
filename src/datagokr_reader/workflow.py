@@ -6,6 +6,7 @@ from datagokr_reader import (
     parse_issu_issu_item_stat,
     parse_opti_exer,
     parse_opti_exer_pric_adju,
+    parse_bond_basi_info,
 )
 from datagokr_reader.base_reader import issuer_name_from_bond_name, normalize_name
 
@@ -48,10 +49,21 @@ def run_bond_workflow(datagokr_api_key: str, bond_name: str):
         else None
     )
 
+    bond_basi = (
+        parse_bond_basi_info(
+            serviceKey=datagokr_api_key,
+            basDt=basDt,
+            isinCd=isinCd,
+        )
+        if basDt and isinCd
+        else None
+    )
+
     return {
         "발행인별채권조회": issu,
         "옵션행사내역": bond_with,
         "주식행사내역": opti_exer,
         "주식행사가조정내역": opti_adju,
         "옵션행사일정": earl,
+        "채권기초정보": bond_basi,
     }

@@ -49,10 +49,9 @@ def run_bond_workflow(datagokr_api_key: str, bond_name: str):
     )
 
     return {
-        "parse_issu_issu_item_stat": issu,
-        "parse_bond_with_opti_call_rede": bond_with,
-        "parse_opti_exer": opti_exer,
-        "parse_opti_exer_pric_adju": opti_adju,
-        "parse_earl_exer_opti": earl,
+        "발행인별채권조회": issu,
+        "옵션행사내역": bond_with,
+        "주식행사내역": opti_exer,
+        "주식행사가조정내역": opti_adju,
+        "옵션행사일정": earl,
     }
-
