@@ -18,6 +18,7 @@ __all__ = [
     "get_OptiExer", "parse_opti_exer", 
     "get_OptiExerPricAdju", "parse_opti_exer_pric_adju", 
     "get_EarlExerOpti", "parse_earl_exer_opti", 
+    "get_BondBasiInfo", "parse_bond_basi_info",
     "get_BondWithOptiCallRede", "parse_bond_with_opti_call_rede",
     "get_IssuIssuItemStat", "parse_issu_issu_item_stat",
     "run_bond_workflow",
