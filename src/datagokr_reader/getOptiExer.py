@@ -14,6 +14,9 @@ def get_OptiExer(
     timeout_seconds: float = 60.0,
 ) -> str | None:
     """ 옵션 실제 행사내역 다운로드. """
+    if not isinCd:
+        return None
+
     service_url = "1160100/service/GetBondRedeInfoService/getOptiExer"
     params: dict[str, Any] = {
         "serviceKey": serviceKey,

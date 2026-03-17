@@ -14,6 +14,9 @@ def get_BondWithOptiCallRede(
     timeout_seconds: float = 60.0,
 ) -> Any | None:
     """ 옵션 행사내역 다운로드. """
+    if not isinCd:
+        return None
+
     service_url = "1160100/service/GetBondRedeInfoService/getBondWithOptiCallRede"
     params: dict[str, Any] = {
         "serviceKey": serviceKey,
@@ -77,5 +80,4 @@ def parse_bond_with_opti_call_rede(
         )
 
     return out
-
 

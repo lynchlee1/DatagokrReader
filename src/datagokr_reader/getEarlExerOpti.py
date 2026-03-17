@@ -18,6 +18,9 @@ def get_EarlExerOpti(
     옵션 행사 일정 다운로드. 콜옵션은 대부분의 경우 누락되니 주의.
     basDt가 없는 경우 수만 개에 달하기 때문에 사실상 사용 불가능.
     """
+    if not basDt or not isinCd:
+        return None
+
     service_url = "1160100/service/GetBondRedeInfoService/getEarlExerOpti"
     params: dict[str, Any] = {
         "serviceKey": serviceKey,

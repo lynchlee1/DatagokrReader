@@ -27,6 +27,16 @@ def run_bond_workflow(datagokr_api_key: str, bond_name: str):
     isinCd = issu.get("isinCd") if isinstance(issu, dict) else ""
     basDt = issu.get("기준일자") if isinstance(issu, dict) else ""
 
+    if not isinCd or not basDt:
+        return {
+            "발행인별채권조회": issu,
+            "옵션행사내역": None,
+            "주식행사내역": None,
+            "주식행사가조정내역": None,
+            "옵션행사일정": None,
+            "채권기초정보": None,
+        }
+
     bond_with = parse_bond_with_opti_call_rede(
         serviceKey=datagokr_api_key,
         isinCd=isinCd,
@@ -39,24 +49,16 @@ def run_bond_workflow(datagokr_api_key: str, bond_name: str):
         serviceKey=datagokr_api_key,
         isinCd=isinCd,
     )
-    earl = (
-        parse_earl_exer_opti(
-            serviceKey=datagokr_api_key,
-            basDt=basDt,
-            isinCd=isinCd,
-        )
-        if basDt and isinCd
-        else None
+    earl = parse_earl_exer_opti(
+        serviceKey=datagokr_api_key,
+        basDt=basDt,
+        isinCd=isinCd,
     )
 
-    bond_basi = (
-        parse_bond_basi_info(
-            serviceKey=datagokr_api_key,
-            basDt=basDt,
-            isinCd=isinCd,
-        )
-        if basDt and isinCd
-        else None
+    bond_basi = parse_bond_basi_info(
+        serviceKey=datagokr_api_key,
+        basDt=basDt,
+        isinCd=isinCd,
     )
 
     return {

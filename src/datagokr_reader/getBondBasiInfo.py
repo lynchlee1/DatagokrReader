@@ -15,6 +15,9 @@ def get_BondBasiInfo(
     timeout_seconds: float = 60.0,
 ) -> Any | None:
     """ 채권 기초정보 다운로드. """
+    if not basDt or not isinCd:
+        return None
+
     service_url = "1160100/service/GetBondIssuInfoService/getBondBasiInfo"
     params: dict[str, Any] = {
         "serviceKey": serviceKey,
@@ -78,5 +81,4 @@ def parse_bond_basi_info(
         )
 
     return out
-
 

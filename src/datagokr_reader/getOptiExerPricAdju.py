@@ -14,6 +14,9 @@ def get_OptiExerPricAdju(
     timeout_seconds: float = 60.0,
 ) -> Any | None:
     """ 행사가 변동내역 및 현재 행사가 다운로드. """
+    if not isinCd:
+        return None
+
     service_url = "1160100/service/GetBondRedeInfoService/getOptiExerPricAdju"
     params: dict[str, Any] = {
         "serviceKey": serviceKey,
@@ -79,4 +82,3 @@ def parse_opti_exer_pric_adju(
     # items 에 "rgtExertPricAdjDt": "00010101" 하나만 있으면 items 를 None 으로 처리
     out = [x for x in out if (x.get("rgtExertPricAdjDt") != "00010101")]
     return out
-
