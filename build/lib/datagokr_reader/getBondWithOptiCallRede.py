@@ -4,7 +4,6 @@ from typing import Any
 
 from .base_reader import get_datagokr_document
 
-# REFERENCE: https://www.data.go.kr/data/15059595/openapi.do
 
 def get_BondWithOptiCallRede(
     serviceKey: str,
@@ -87,6 +86,7 @@ def parse_bond_with_opti_call_rede(
     # "opbdIssuDt": it.get("opbdIssuDt"),    # 채권의 발행일, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
     # "opbdExprDt": it.get("opbdExprDt"),    # 채권의 만기일, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
     # "opbdIssuAmt": it.get("opbdIssuAmt"),  # 최초발행액, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
+    # "bondIssuAmt": it.get("bondIssuAmt"),  # 발행잔액, BasiInfo에서 이미 있음(추후 복원 가능하도록 주석 처리)
 
     out: list[dict[str, Any]] = []
     for it in items:
@@ -100,10 +100,9 @@ def parse_bond_with_opti_call_rede(
         out.append(
             {
                 "isinCd": isin,
-                "옵션유형": it.get("optnTcdNm"),
-                "행사일자": it.get("opbdClrdDt"),
-                "행사원금": it.get("opbdPamtPayAmt"),
-                "발행잔액": it.get("bondIssuAmt")
+                "optnTcdNm": it.get("optnTcdNm"),
+                "opbdClrdDt": it.get("opbdClrdDt"),
+                "opbdPamtPayAmt": it.get("opbdPamtPayAmt"),
             }
         )
 

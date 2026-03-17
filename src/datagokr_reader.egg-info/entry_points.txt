@@ -1,0 +1,2 @@
+[console_scripts]
+datagokr-reader = datagokr_reader.cli:main

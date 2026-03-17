@@ -8,7 +8,7 @@ version = "1.0.0"
 description = " data.go.kr의 채권 관련 API를 사용하기 편하게 만든 라이브러리입니다."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "WONWOO LEE" }]
 dependencies = [
   "httpx>=0.27",
@@ -21,6 +21,9 @@ dev = [
 
 [project.urls]
 Repository = "https://example.com"
+
+[project.scripts]
+datagokr-reader = "datagokr_reader.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
